@@ -28,7 +28,9 @@
     <string name="drawer_close">Close drawer</string>
 
     <string name="download_permission_explaination">In order to download files, you need to grant us permission to your storage.\n\nAfter granting us access, you may go ahead and download the file.</string>
-    <string name="download_permission_grant">Grant permission</string>
+
+    <string name="common_permission_explaination">In order to use this app, you need to grant us some permissions.</string>
+    <string name="common_permission_grant">Grant permission</string>
 
     <string name="share1">I came across </string>
     <!--  we will automatically website title here-->

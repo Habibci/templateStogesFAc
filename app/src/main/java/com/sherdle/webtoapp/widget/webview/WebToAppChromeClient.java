@@ -3,13 +3,17 @@ package com.sherdle.webtoapp.widget.webview;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.PermissionRequest;
@@ -120,7 +124,6 @@ public class WebToAppChromeClient extends WebChromeClient {
             request.grant(request.getResources());
         }
     }
-
 
     // Setting the title
     @Override

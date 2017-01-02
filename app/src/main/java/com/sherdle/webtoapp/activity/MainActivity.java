@@ -14,12 +14,17 @@ import com.sherdle.webtoapp.fragment.WebFragment;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -93,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
 
         if (getHideTabs())
             mSlidingTabLayout.setVisibility(View.GONE);
+
+        hasPermissionToDo(this, Config.PERMISSIONS_REQUIRED);
 
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewPager.getLayoutParams();
         if ((Config.HIDE_ACTIONBAR && getHideTabs()) || ((Config.HIDE_ACTIONBAR || getHideTabs()) && getCollapsingActionBar())){
@@ -399,5 +406,32 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
     public void onDrawerItemSelected(View view, int position) {
         getFragment().browser.loadUrl("about:blank");
         getFragment().setBaseUrl(Config.URLS[position]);
+    }
+
+    private static boolean hasPermissionToDo(final Activity context, final String[] permissions) {
+        boolean oneDenied = false;
+        for (String permission : permissions) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                    ContextCompat.checkSelfPermission(context, permission)
+                            != PackageManager.PERMISSION_GRANTED)
+                oneDenied = true;
+        }
+
+        if (!oneDenied) return true;
+
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(context);
+        builder.setMessage(R.string.common_permission_explaination);
+        builder.setPositiveButton(R.string.common_permission_grant, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // Fire off an async request to actually get the permission
+                // This will show the standard permission request dialog UI
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    context.requestPermissions(permissions,1);
+            }
+        });
+        android.support.v7.app.AlertDialog dialog = builder.create();
+        dialog.show();
+
+        return false;
     }
 }

@@ -216,7 +216,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(R.string.download_permission_explaination);
-        builder.setPositiveButton(R.string.download_permission_grant, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.common_permission_grant, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // Fire off an async request to actually get the permission
                 // This will show the standard permission request dialog UI

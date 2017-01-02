@@ -1,5 +1,8 @@
 package com.sherdle.webtoapp;
 
+import android.*;
+import android.Manifest;
+
 public class Config {
 
     /**
@@ -57,6 +60,8 @@ public class Config {
     public static boolean MULTI_WINDOWS = false;
     //If you would like to show the splash screen for an additional amount of time after page load, define it here (MS)
     public static int SPLASH_SCREEN_DELAY = 0;
+    //Permissions required to use the app (should also be in manifest.xml)
+    public static String[] PERMISSIONS_REQUIRED = new String[]{Manifest.permission.ACCESS_FINE_LOCATION}; //Manifest.permission.PERMISSION_NAME
     //Always use the app name as actionbar title (only applies for if USE_DRAWER is false and number of tabs == 1)
     public static boolean STATIC_TOOLBAR_TITLE = false;
     //Load a webpage when no internet connection was found (must be in assets). Leave empty to show dialog.
