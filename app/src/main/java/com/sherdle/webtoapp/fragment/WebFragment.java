@@ -23,6 +23,9 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.sherdle.webtoapp.App;
 import com.sherdle.webtoapp.Config;
 import com.sherdle.webtoapp.GetFileInfo;
@@ -36,18 +39,24 @@ import com.sherdle.webtoapp.widget.scrollable.ToolbarWebViewScrollListener;
 import java.util.concurrent.ExecutionException;
 
 public class WebFragment extends Fragment implements AdvancedWebView.Listener, SwipeRefreshLayout.OnRefreshListener{
-    
+
+    //Layouts
     public FrameLayout rl;
     public AdvancedWebView browser;
     public SwipeRefreshLayout swipeLayout;
     public ProgressBar progressBar;
 
+    //WebView Clients
     public WebToAppChromeClient chromeClient;
     public WebToAppWebClient webClient;
 
+    //WebView Session
     public String mainUrl = null;
     static String URL = "url";
     public int firstLoad = 0;
+
+    //Keep track of the interstitials we show
+    private int interstitialCount = -1;
 
     public WebFragment() {
         // Required empty public constructor
@@ -238,6 +247,32 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
         } else if (firstLoad == 0){
             firstLoad = 1;
         }
+    }
+
+    /**
+     * Show an interstitial ad
+     */
+    private void showInterstitial(){
+        //if (fromPager) return;
+        if (getResources().getString(R.string.ad_interstitial_id).length() == 0) return;
+
+        if (interstitialCount == (Config.INTERSTITIAL_PAGE_INTERVAL - 1)) {
+            final InterstitialAd mInterstitialAd = new InterstitialAd(getActivity());
+            mInterstitialAd.setAdUnitId(getResources().getString(R.string.ad_interstitial_id));
+            AdRequest adRequestInter = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    mInterstitialAd.show();
+                }
+            });
+            mInterstitialAd.loadAd(adRequestInter);
+
+            interstitialCount = 0;
+        } else {
+            interstitialCount++;
+        }
+
     }
 
     @Override

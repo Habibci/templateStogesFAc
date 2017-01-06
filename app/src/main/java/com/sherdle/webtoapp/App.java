@@ -7,7 +7,9 @@ import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OneSignal;
+import com.sherdle.webtoapp.activity.MainActivity;
 
 import org.json.JSONObject;
 
@@ -39,24 +41,34 @@ public class App extends Application {
     }
 
     // This fires when a notification is opened by tapping on it or one is received while the app is running.
-    private class NotificationHandler implements OneSignal.NotificationOpenedHandler {
+    class NotificationHandler implements OneSignal.NotificationOpenedHandler {
+        // This fires when a notification is opened by tapping on it.
         @Override
-        public void notificationOpened(String message, JSONObject additionalData, boolean isActive) {
+        public void notificationOpened(OSNotificationOpenResult result) {
             try {
-                //If the app is not on foreground, clicking the notification will start the app, and push_url will be used.
-                if (!isActive) {
-                    if (additionalData != null && additionalData.has("url")) {
-                        push_url = additionalData.getString("url");
+                JSONObject data = result.notification.payload.additionalData;
+                String url = (data != null) ? data.optString("url", null) : null;
+                if (url != null) {
+                    if (!result.notification.isAppInFocus) {
+                        push_url = url;
+                    } else {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(browserIntent);
+                        Log.v("INFO", "Received notification while app was on foreground");
                     }
-                } else { //If the app is in foreground, don't interup the current activities, but open webview in a new window.
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(additionalData.getString("url")));
-                    startActivity(browserIntent);
-                    Log.v("INFO", "Received notification while app was on foreground");
+                } else if (!result.notification.isAppInFocus) {
+                    Intent mainIntent;
+                    mainIntent = new Intent(App.this, MainActivity.class);
+                    mainIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(mainIntent);
                 }
+
+
             } catch (Throwable t) {
                 t.printStackTrace();
             }
         }
+
     }
 
     public synchronized String getPushUrl(){

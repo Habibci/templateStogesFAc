@@ -68,4 +68,10 @@ public class Config {
     public static String NO_CONNECTION_PAGE = "";
     //The image/icon used for in the drawer header
     public static int DRAWER_ICON = R.mipmap.ic_launcher;
+
+    //The frequency in which interstitial ads are shown for when loading pages
+    //('0' to never show, '1' to always show, '2' to show 1 out of 2, etc)
+    public static final int INTERSTITIAL_PAGE_INTERVAL = 2;
+    //The frequency in which interstitial ads are shown when switching tabs/menu items
+    public static final int INTERSTITIAL_NAVIGATION_INTERVAL = 2;
 }

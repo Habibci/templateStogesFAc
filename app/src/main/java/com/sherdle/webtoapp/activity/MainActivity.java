@@ -1,6 +1,7 @@
 package com.sherdle.webtoapp.activity;
 
-import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.InterstitialAd;
 import com.sherdle.webtoapp.App;
 import com.sherdle.webtoapp.Config;
 import com.sherdle.webtoapp.R;
@@ -15,12 +16,9 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.TypedArray;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -49,8 +47,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
-
 
 public class MainActivity extends AppCompatActivity implements DrawerFragment.DrawerFragmentListener{
 
@@ -60,15 +56,20 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
     public TabLayout mSlidingTabLayout;
     public SwipeableViewPager mViewPager;
 
+    //App Navigation Structure
     private NavigationAdapter mAdapter;
     private DrawerFragment drawerFragment;
 
     private WebFragment CurrentAnimatingFragment = null;
     private int CurrentAnimation = 0;
 
+    //Identify toolbar state
     private static int NO = 0;
     private static int HIDING = 1;
     private static int SHOWING = 2;
+
+    //Keep track of the interstitials we show
+    private int interstitialCount = -1;
 
 
     @Override
@@ -135,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
                     showToolbar(getFragment());
                 }
                 mViewPager.setCurrentItem(tab.getPosition());
+                showInterstitial();
             }
 
             @Override
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
         }
 
         // admob
-        if (!getResources().getString(R.string.ad_unit_id).equals("")) {
+        if (!getResources().getString(R.string.ad_banner_id).equals("")) {
             // Look up the AdView as a resource and load a request.
             AdView adView = (AdView) findViewById(R.id.adView);
             AdRequest adRequest = new AdRequest.Builder().build();
@@ -406,6 +408,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
     public void onDrawerItemSelected(View view, int position) {
         getFragment().browser.loadUrl("about:blank");
         getFragment().setBaseUrl(Config.URLS[position]);
+        showInterstitial();
     }
 
     private static boolean hasPermissionToDo(final Activity context, final String[] permissions) {
@@ -433,5 +436,31 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
         dialog.show();
 
         return false;
+    }
+
+    /**
+     * Show an interstitial ad
+     */
+    private void showInterstitial(){
+        //if (fromPager) return;
+        if (getResources().getString(R.string.ad_interstitial_id).length() == 0) return;
+
+        if (interstitialCount == (Config.INTERSTITIAL_NAVIGATION_INTERVAL - 1)) {
+            final InterstitialAd mInterstitialAd = new InterstitialAd(this);
+            mInterstitialAd.setAdUnitId(getResources().getString(R.string.ad_interstitial_id));
+            AdRequest adRequestInter = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    mInterstitialAd.show();
+                }
+            });
+            mInterstitialAd.loadAd(adRequestInter);
+
+            interstitialCount = 0;
+        } else {
+            interstitialCount++;
+        }
+
     }
 }
