@@ -49,12 +49,12 @@ public class App extends Application {
                 JSONObject data = result.notification.payload.additionalData;
                 String url = (data != null) ? data.optString("url", null) : null;
                 if (url != null) {
-                    if (!result.notification.isAppInFocus) {
-                        push_url = url;
-                    } else {
+                    if (result.notification.isAppInFocus) {
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                         startActivity(browserIntent);
                         Log.v("INFO", "Received notification while app was on foreground");
+                    } else {
+                        push_url = url;
                     }
                 } else if (!result.notification.isAppInFocus) {
                     Intent mainIntent;

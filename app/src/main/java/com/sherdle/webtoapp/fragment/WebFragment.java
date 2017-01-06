@@ -277,7 +277,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
 
     @Override
     public void onPageFinished(String url) {
-        // TODO Auto-generated method stub
+        showInterstitial();
     }
 
     @Override
