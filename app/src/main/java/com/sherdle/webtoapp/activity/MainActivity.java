@@ -219,6 +219,19 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+
+        //Adjust menu item visibility/availability based on settings
+        if (Config.HIDE_MENU_SHARE) {
+            menu.findItem(R.id.share).setVisible(false);
+        }
+        if (Config.HIDE_MENU_NAVIGATION){
+            menu.findItem(R.id.previous).setVisible(false);
+            menu.findItem(R.id.next).setVisible(false);
+        }
+        if (!Config.SHOW_NOTIFICATION_SETTINGS || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+            menu.findItem(R.id.notification_settings).setVisible(false);
+        }
+
         return true;
     }
 
@@ -245,6 +258,12 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
             Toast.makeText(getApplicationContext(),
                     getText(R.string.exit_message), Toast.LENGTH_SHORT).show();
             return true;
+        } else if (item.getItemId() == R.id.notification_settings){
+            Intent intent = new Intent();
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", getPackageName());
+            intent.putExtra("app_uid", getApplicationInfo().uid);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }

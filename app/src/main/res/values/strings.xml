@@ -9,7 +9,7 @@
     <string name="previous">Previous</string>
     <string name="next">Next</string>
     <string name="stop">Stop</string>
-    <string name="noconnection">No internet connection was found</string>
+    <string name="no_connection">No internet connection was found</string>
     <string name="ok">Ok</string>
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
@@ -21,6 +21,7 @@
     <string name="download">Download</string>
     <string name="saved">Saved at: </string>
     <string name="sharetitle">Share this!</string>
+    <string name="notification_settings">Notification settings</string>
     <string name="download_fail">Download failed</string>
     <string name="download_done">The file has been saved in the downloads folder, open it by tapping the file in your notifications</string>
     <string name="exit_message">Thank you for using our app!</string>

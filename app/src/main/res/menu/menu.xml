@@ -16,6 +16,9 @@
         android:id="@+id/about"
         android:title="@string/about"/>
     <item
+        android:id="@+id/notification_settings"
+        android:title="@string/notification_settings"/>
+    <item
         android:id="@+id/home"
         android:icon="@drawable/ic_action_action_home"
         app:showAsAction="ifRoom"

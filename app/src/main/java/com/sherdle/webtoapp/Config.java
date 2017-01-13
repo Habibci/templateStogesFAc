@@ -43,7 +43,7 @@ public class Config {
     public static String ANALYTICS_ID = "UA-46717142-1";
 
     //Google sender ID and OneSignal ID have to be edited in build.gradle
-    //Admob ID has to be configured in Strings.xml
+    //Admob IDs have to be configured in Strings.xml
 
     /**
      * ADVANCED SETTINGS
@@ -56,6 +56,13 @@ public class Config {
 
     //Set to true if you would like to hide the drawer header. Only applies if USE_DRAWER is true
     public static boolean HIDE_DRAWER_HEADER = false;
+    //Set to true if you would like to hide navigation in the toolbar (i.e. back, forward)
+    public static boolean HIDE_MENU_NAVIGATION = false;
+    //Set to true if you would like to hide navigation in the toolbar (i.e. back, forward)
+    public static boolean HIDE_MENU_SHARE = false;
+    //Set to true if you would like to show a link to the apps notification settings
+    public static boolean SHOW_NOTIFICATION_SETTINGS = true;
+
     //Set to true if you would like to support popup windows, e.g. for Facebook login
     public static boolean MULTI_WINDOWS = false;
     //If you would like to show the splash screen for an additional amount of time after page load, define it here (MS)

@@ -131,7 +131,7 @@ public class WebToAppWebClient extends WebViewClient {
                     browser.loadUrl(Config.NO_CONNECTION_PAGE);
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                    builder.setMessage(activity.getString(R.string.noconnection));
+                    builder.setMessage(activity.getString(R.string.no_connection));
                     builder.setCancelable(false);
                     builder.setNeutralButton(R.string.ok, null);
                     builder.setTitle(activity.getString(R.string.error));
