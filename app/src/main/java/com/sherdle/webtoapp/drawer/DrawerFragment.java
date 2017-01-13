@@ -86,10 +86,11 @@ public class DrawerFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                adapter.setSelectedPosition(i);
-
-                drawerListener.onDrawerItemSelected(view, i);
+                boolean selectNew = drawerListener.onDrawerItemSelected(view, i);
                 mDrawerLayout.closeDrawer(containerView);
+
+                if (selectNew)
+                    adapter.setSelectedPosition(i);
             }
 
         });
@@ -132,6 +133,9 @@ public class DrawerFragment extends Fragment {
     }
 
     public interface DrawerFragmentListener {
-        public void onDrawerItemSelected(View view, int position);
+        /**
+         * @return true if the item should be selected in the menu, false if the selection shouldn't be updated
+         */
+        boolean onDrawerItemSelected(View view, int position);
     }
 }

@@ -7,6 +7,7 @@ import com.sherdle.webtoapp.Config;
 import com.sherdle.webtoapp.R;
 import com.sherdle.webtoapp.drawer.DrawerFragment;
 import com.sherdle.webtoapp.widget.SwipeableViewPager;
+import com.sherdle.webtoapp.widget.webview.WebToAppWebClient;
 import com.tjeannin.apprate.AppRate;
 
 import com.sherdle.webtoapp.adapter.NavigationAdapter;
@@ -16,9 +17,11 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -424,10 +427,27 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
     }
 
     @Override
-    public void onDrawerItemSelected(View view, int position) {
-        getFragment().browser.loadUrl("about:blank");
-        getFragment().setBaseUrl(Config.URLS[position]);
-        showInterstitial();
+    public boolean onDrawerItemSelected(View view, int position) {
+        String url = Config.URLS[position];
+        if (WebToAppWebClient.urlShouldOpenExternally(url)){
+            try {
+                view.getContext().startActivity(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            } catch(ActivityNotFoundException e) {
+                if (url.startsWith("intent://")) {
+                    view.getContext().startActivity(
+                            new Intent(Intent.ACTION_VIEW, Uri.parse(url.replace("intent://", "http://"))));
+                } else {
+                    Toast.makeText(this, getResources().getString(R.string.no_app_message), Toast.LENGTH_LONG).show();
+                }
+            }
+            return false;
+        } else {
+            getFragment().browser.loadUrl("about:blank");
+            getFragment().setBaseUrl(Config.URLS[position]);
+            showInterstitial();
+            return true;
+        }
     }
 
     private static boolean hasPermissionToDo(final Activity context, final String[] permissions) {

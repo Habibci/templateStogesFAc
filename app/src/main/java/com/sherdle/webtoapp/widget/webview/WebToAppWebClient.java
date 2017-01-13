@@ -147,7 +147,7 @@ public class WebToAppWebClient extends WebViewClient {
      * @param url The url that we would like to load
      * @return If it should be loaded inside or outside the WebView
      */
-    private boolean urlShouldOpenExternally(String url){
+    public static boolean urlShouldOpenExternally(String url){
 
         /*
          * If there is a set of urls defined that may only open inside the WebView and
