@@ -8,10 +8,8 @@ import java.net.URL;
 /**
  * Created by Sherdle
  */
-public class GetFileInfo extends AsyncTask<String, Integer, String>
-{
-    protected String doInBackground(String... urls)
-    {
+public class GetFileInfo extends AsyncTask<String, Integer, String> {
+    protected String doInBackground(String... urls) {
         URL url;
         String filename = null;
         try {
@@ -35,6 +33,7 @@ public class GetFileInfo extends AsyncTask<String, Integer, String>
     protected void onPreExecute() {
         super.onPreExecute();
     }
+
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);

@@ -5,7 +5,10 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.sherdle.webtoapp.App;
 import com.sherdle.webtoapp.Config;
 import com.sherdle.webtoapp.R;
-import com.sherdle.webtoapp.drawer.DrawerFragment;
+import com.sherdle.webtoapp.drawer.menu.Action;
+import com.sherdle.webtoapp.drawer.menu.MenuItemCallback;
+import com.sherdle.webtoapp.drawer.menu.SimpleMenu;
+import com.sherdle.webtoapp.drawer.menu.SimpleSubMenu;
 import com.sherdle.webtoapp.widget.SwipeableViewPager;
 import com.sherdle.webtoapp.widget.webview.WebToAppWebClient;
 import com.tjeannin.apprate.AppRate;
@@ -24,10 +27,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,12 +53,16 @@ import android.text.util.Linkify;
 import android.view.MenuInflater;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements DrawerFragment.DrawerFragmentListener{
+
+public class MainActivity extends AppCompatActivity implements MenuItemCallback{
 
     //Views
     public Toolbar mToolbar;
@@ -61,7 +72,8 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
 
     //App Navigation Structure
     private NavigationAdapter mAdapter;
-    private DrawerFragment drawerFragment;
+    private NavigationView navigationView;
+    private SimpleMenu menu;
 
     private WebFragment CurrentAnimatingFragment = null;
     private int CurrentAnimation = 0;
@@ -97,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
             ((App) getApplication()).setPushUrl(data);
         }
 
+        //Hiding ActionBar/Toolbar
         if (Config.HIDE_ACTIONBAR)
             getSupportActionBar().hide();
 
@@ -114,25 +127,15 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
             lp.topMargin = getActionBarHeight() * 2;
         }
 
-        if (Config.USE_DRAWER) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-            drawerFragment = (DrawerFragment)
-                    getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
-            drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
-            drawerFragment.setDrawerListener(this);
-        } else {
-            ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        }
-
         mViewPager.setLayoutParams(lp);
 
-        mViewPager.setAdapter(mAdapter);
+        //Tabs
+        mViewPager.setAdapter(mAdapter); //TODO This breaks interstitials
         mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);
 
         mSlidingTabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.accent));
         mSlidingTabLayout.setupWithViewPager(mViewPager);
-        mSlidingTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mSlidingTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (getCollapsingActionBar()) {
@@ -159,7 +162,33 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
             }
         }
 
-        // admob
+        //Drawer
+        if (Config.USE_DRAWER) {
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            DrawerLayout drawer =  ((DrawerLayout) findViewById(R.id.drawer_layout));
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, mToolbar, 0, 0);
+            drawer.addDrawerListener(toggle);
+            toggle.syncState();
+
+            //Menu items
+            navigationView = (NavigationView) findViewById(R.id.nav_view);
+            menu = new SimpleMenu(navigationView.getMenu(), this);
+            configureMenu(menu);
+
+            if (Config.HIDE_DRAWER_HEADER) {
+                navigationView.getHeaderView(0).setVisibility(View.GONE);
+                navigationView.setFitsSystemWindows(false);
+            } else {
+                ((ImageView) navigationView.getHeaderView(0).findViewById(R.id.drawer_icon)).setImageResource(Config.DRAWER_ICON);
+            }
+        } else {
+            ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+
+        //Admob
         if (!getResources().getString(R.string.ad_banner_id).equals("")) {
             // Look up the AdView as a resource and load a request.
             AdView adView = (AdView) findViewById(R.id.adView);
@@ -170,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
             adView.setVisibility(View.GONE);
         }
 
-        // application rating
+        //Application rating
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.rate_title))
                 .setMessage(String.format(getString(R.string.rate_message), getString(R.string.app_name)))
@@ -185,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
                 .setCustomDialog(builder)
                 .init();
 
-        // showing the splash screen
+        //Showing the splash screen
         if (Config.SPLASH) {
             findViewById(R.id.imageLoading1).setVisibility(View.VISIBLE);
             //getFragment().browser.setVisibility(View.GONE);
@@ -282,7 +311,9 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
         super.onResume();
     }
 
-    // showing about dialog
+    /**
+     * Showing the About Dialog
+     */
     private void AboutDialog() {
         // setting the dialogs text, and making the links clickable
         final TextView message = new TextView(this);
@@ -305,31 +336,44 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
                 .setPositiveButton("ok", null).setView(message).create().show();
     }
 
+    /**
+     * Set the ActionBar Title
+     * @param title title
+     */
     public void setTitle(String title) {
         if (mAdapter != null && mAdapter.getCount() == 1 && !Config.USE_DRAWER && !Config.STATIC_TOOLBAR_TITLE)
             getSupportActionBar().setTitle(title);
     }
 
+    /**
+     * @return the Current WebFragment
+     */
     public WebFragment getFragment(){
         return (WebFragment) mAdapter.getCurrentFragment();
     }
 
+    /**
+     * Hide the Splash Screen
+     */
     public void hideSplash() {
         if (Config.SPLASH) {
-            Handler mHandler = new Handler();
-            mHandler.postDelayed(new Runnable() {
-                public void run() {
-                    // hide splash image
-                    if (findViewById(R.id.imageLoading1).getVisibility() == View.VISIBLE) {
+            if (findViewById(R.id.imageLoading1).getVisibility() == View.VISIBLE) {
+                Handler mHandler = new Handler();
+                mHandler.postDelayed(new Runnable() {
+                    public void run() {
+                        // hide splash image
                         findViewById(R.id.imageLoading1).setVisibility(
-                                View.GONE);
+                                    View.GONE);
                     }
-                }
-                // set a delay before splashscreen is hidden
-            }, Config.SPLASH_SCREEN_DELAY);
+                    // set a delay before splashscreen is hidden
+                }, Config.SPLASH_SCREEN_DELAY);
+            }
         }
     }
 
+    /**
+     * Hide the toolbar
+     */
     public void hideToolbar() {
         if (CurrentAnimation != HIDING) {
             CurrentAnimation = HIDING;
@@ -362,6 +406,10 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
         }
     }
 
+    /**
+     * Show the toolbar
+     * @param fragment for which to show the toolbar
+     */
     public void showToolbar(WebFragment fragment) {
         if (CurrentAnimation != SHOWING || fragment != CurrentAnimatingFragment) {
             CurrentAnimation = SHOWING;
@@ -426,30 +474,12 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
         }
     }
 
-    @Override
-    public boolean onDrawerItemSelected(View view, int position) {
-        String url = Config.URLS[position];
-        if (WebToAppWebClient.urlShouldOpenExternally(url)){
-            try {
-                view.getContext().startActivity(
-                        new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            } catch(ActivityNotFoundException e) {
-                if (url.startsWith("intent://")) {
-                    view.getContext().startActivity(
-                            new Intent(Intent.ACTION_VIEW, Uri.parse(url.replace("intent://", "http://"))));
-                } else {
-                    Toast.makeText(this, getResources().getString(R.string.no_app_message), Toast.LENGTH_LONG).show();
-                }
-            }
-            return false;
-        } else {
-            getFragment().browser.loadUrl("about:blank");
-            getFragment().setBaseUrl(Config.URLS[position]);
-            showInterstitial();
-            return true;
-        }
-    }
-
+    /**
+     * Check permissions on app start
+     * @param context
+     * @param permissions Permissions to check
+     * @return if the permissions are available
+     */
     private static boolean hasPermissionToDo(final Activity context, final String[] permissions) {
         boolean oneDenied = false;
         for (String permission : permissions) {
@@ -461,7 +491,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
 
         if (!oneDenied) return true;
 
-        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(R.string.common_permission_explaination);
         builder.setPositiveButton(R.string.common_permission_grant, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -471,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
                     context.requestPermissions(permissions,1);
             }
         });
-        android.support.v7.app.AlertDialog dialog = builder.create();
+        AlertDialog dialog = builder.create();
         dialog.show();
 
         return false;
@@ -483,6 +513,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
     private void showInterstitial(){
         //if (fromPager) return;
         if (getResources().getString(R.string.ad_interstitial_id).length() == 0) return;
+        if (Config.INTERSTITIAL_NAVIGATION_INTERVAL == 0) return;
 
         if (interstitialCount == (Config.INTERSTITIAL_NAVIGATION_INTERVAL - 1)) {
             final InterstitialAd mInterstitialAd = new InterstitialAd(this);
@@ -491,6 +522,7 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
             mInterstitialAd.setAdListener(new AdListener() {
                 @Override
                 public void onAdLoaded() {
+                    super.onAdLoaded();
                     mInterstitialAd.show();
                 }
             });
@@ -500,6 +532,67 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Dr
         } else {
             interstitialCount++;
         }
+    }
 
+    /**
+     * Configure the navigationView
+     * @param menu to modify
+     */
+    public void configureMenu(SimpleMenu menu){
+        for (int i = 0; i < Config.TITLES.length; i++) {
+            //The title
+            String title = null;
+            Object titleObj = Config.TITLES[i];
+            if (titleObj instanceof Integer && !titleObj.equals(0)) {
+                title = getResources().getString((int) titleObj);
+            } else {
+                title = (String) titleObj;
+            }
+
+            //The icon
+            int icon = 0;
+            if (Config.ICONS.length > i)
+                icon = Config.ICONS[i];
+
+            menu.add("Title", icon, new Action(title, Config.URLS[i]));
+        }
+
+        menuItemClicked(menu.getFirstMenuItem().getValue(), menu.getFirstMenuItem().getKey());
+    }
+
+    @Override
+    public void menuItemClicked(Action action, MenuItem item) {
+        if (WebToAppWebClient.urlShouldOpenExternally(action.url)){
+            //Load url outside WebView
+            try {
+                startActivity(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(action.url)));
+            } catch(ActivityNotFoundException e) {
+                if (action.url.startsWith("intent://")) {
+                    startActivity(
+                            new Intent(Intent.ACTION_VIEW, Uri.parse(action.url.replace("intent://", "http://"))));
+                } else {
+                    Toast.makeText(this, getResources().getString(R.string.no_app_message), Toast.LENGTH_LONG).show();
+                }
+            }
+        } else {
+            //Uncheck all other items, check the current item
+            for (MenuItem menuItem : menu.getMenuItems())
+                menuItem.setChecked(false);
+            item.setChecked(true);
+
+            //Close the drawer
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+
+            //Load the url
+            if (getFragment() == null) return;
+            getFragment().browser.loadUrl("about:blank");
+            getFragment().setBaseUrl(action.url);
+
+            //Show intersitial if applicable
+            showInterstitial();
+            Log.v("INFO", "Drawer Item Selected");
+        }
     }
 }
