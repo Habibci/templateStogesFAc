@@ -219,9 +219,11 @@ public class AdvancedWebView extends WebView {
 	@SuppressLint("NewApi")
 	@SuppressWarnings("all")
 	public void onPause() {
-		//TODO re-implement
+		//TODO re-implement also when interstitials are enabled
 		//For now this isn't possible, because it will pause interstitial ads as well when the webview is paused.
-		//pauseTimers();
+        if (getResources().getString(R.string.ad_interstitial_id).length() == 0)
+            pauseTimers();
+
 		if (Build.VERSION.SDK_INT >= 11) {
 			super.onPause();
 		}

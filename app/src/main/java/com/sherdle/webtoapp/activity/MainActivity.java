@@ -525,6 +525,11 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
                     super.onAdLoaded();
                     mInterstitialAd.show();
                 }
+
+                @Override
+                public void onAdClosed() {
+                    super.onAdClosed();
+                }
             });
             mInterstitialAd.loadAd(adRequestInter);
 

@@ -265,6 +265,10 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
                     super.onAdLoaded();
                     mInterstitialAd.show();
                 }
+                @Override
+                public void onAdClosed() {
+                    super.onAdClosed();
+                }
             });
             mInterstitialAd.loadAd(adRequestInter);
 
