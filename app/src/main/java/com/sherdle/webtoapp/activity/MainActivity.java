@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
         mViewPager.setLayoutParams(lp);
 
         //Tabs
-        mViewPager.setAdapter(mAdapter); //TODO This breaks interstitials
+        mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);
 
         mSlidingTabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.accent));

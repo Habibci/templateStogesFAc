@@ -219,7 +219,9 @@ public class AdvancedWebView extends WebView {
 	@SuppressLint("NewApi")
 	@SuppressWarnings("all")
 	public void onPause() {
-		pauseTimers();
+		//TODO re-implement
+		//For now this isn't possible, because it will pause interstitial ads as well when the webview is paused.
+		//pauseTimers();
 		if (Build.VERSION.SDK_INT >= 11) {
 			super.onPause();
 		}

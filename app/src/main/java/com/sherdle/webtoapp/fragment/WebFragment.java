@@ -159,9 +159,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
             } else {
                 browser.loadUrl(mainUrl);
             }
-
         }
-
     }
 
     @Override
@@ -255,6 +253,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
     private void showInterstitial(){
         //if (fromPager) return;
         if (getResources().getString(R.string.ad_interstitial_id).length() == 0) return;
+        if (Config.INTERSTITIAL_PAGE_INTERVAL == 0) return;
 
         if (interstitialCount == (Config.INTERSTITIAL_PAGE_INTERVAL - 1)) {
             final InterstitialAd mInterstitialAd = new InterstitialAd(getActivity());
@@ -263,6 +262,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
             mInterstitialAd.setAdListener(new AdListener() {
                 @Override
                 public void onAdLoaded() {
+                    super.onAdLoaded();
                     mInterstitialAd.show();
                 }
             });
@@ -277,7 +277,8 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
 
     @Override
     public void onPageFinished(String url) {
-        showInterstitial();
+        if (!url.equals(mainUrl))
+            showInterstitial();
     }
 
     @Override
