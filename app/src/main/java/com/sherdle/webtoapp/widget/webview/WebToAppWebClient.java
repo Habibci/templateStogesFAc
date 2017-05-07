@@ -1,5 +1,6 @@
 package com.sherdle.webtoapp.widget.webview;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -8,6 +9,9 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.util.Log;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -15,19 +19,27 @@ import android.widget.Toast;
 import com.sherdle.webtoapp.Config;
 import com.sherdle.webtoapp.R;
 import com.sherdle.webtoapp.activity.MainActivity;
+import com.sherdle.webtoapp.fragment.WebFragment;
 
 public class WebToAppWebClient extends WebViewClient {
 
-    Activity activity;
+    WebFragment fragment;
     WebView browser;
 
-    public WebToAppWebClient(Activity activity, WebView browser)
+    public WebToAppWebClient(WebFragment fragment, WebView browser)
     {
         super();
-        this.activity = activity;
+        this.fragment = fragment;
         this.browser = browser;
     }
 
+    @TargetApi(android.os.Build.VERSION_CODES.N)
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        return shouldOverrideUrlLoading(view, request.getUrl().toString());
+    }
+
+    @SuppressWarnings("deprecation")
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (urlShouldOpenExternally(url)) {
@@ -40,7 +52,7 @@ public class WebToAppWebClient extends WebViewClient {
                     view.getContext().startActivity(
                             new Intent(Intent.ACTION_VIEW, Uri.parse(url.replace("intent://", "http://"))));
                 } else {
-                    Toast.makeText(activity, activity.getResources().getString(R.string.no_app_message), Toast.LENGTH_LONG).show();
+                    Toast.makeText(fragment.getActivity(), fragment.getActivity().getResources().getString(R.string.no_app_message), Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -75,30 +87,27 @@ public class WebToAppWebClient extends WebViewClient {
 
     @Override
     public void onPageFinished(WebView view, String url) {
-        try {
-            ((MainActivity) activity).hideSplash();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+        //
+    }
 
-
+    @TargetApi(android.os.Build.VERSION_CODES.M)
+    @Override
+    public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError rerr) {
+        // Redirect to deprecated method, so you can use it in all SDK versions
+        onReceivedError(view, rerr.getErrorCode(), rerr.getDescription().toString(), req.getUrl().toString());
     }
 
     // handeling errors
+    @SuppressWarnings("deprecation")
     @Override
     public void onReceivedError(WebView view, int errorCode,
                                 String description, String failingUrl) {
-
         if (hasConnectivity("", false)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    activity);
-            builder.setMessage(description)
-                    .setPositiveButton(activity.getText(R.string.ok), null)
-                    .setTitle("Whoops");
-            builder.show();
+            //If an error occurred while we had connectivity, the page must be borken
+            fragment.showErrorScreen(fragment.getActivity().getString(R.string.error));
         } else {
+            //If we don't have connectivity, and this isn't an online page, let hasConnectivity handle the error
             if (!failingUrl.startsWith("file:///android_asset")) {
-                browser.loadUrl("");
                 hasConnectivity("", true);
             }
         }
@@ -117,7 +126,7 @@ public class WebToAppWebClient extends WebViewClient {
             return true;
         }
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) activity
+        ConnectivityManager connectivityManager = (ConnectivityManager) fragment.getActivity()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = connectivityManager.getActiveNetworkInfo();
 
@@ -126,16 +135,10 @@ public class WebToAppWebClient extends WebViewClient {
             enabled = false;
 
             if (showDialog){
-
                 if (Config.NO_CONNECTION_PAGE.length() > 0 && Config.NO_CONNECTION_PAGE.startsWith("file:///android_asset")) {
                     browser.loadUrl(Config.NO_CONNECTION_PAGE);
                 } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                    builder.setMessage(activity.getString(R.string.no_connection));
-                    builder.setCancelable(false);
-                    builder.setNeutralButton(R.string.ok, null);
-                    builder.setTitle(activity.getString(R.string.error));
-                    builder.create().show();
+                    fragment.showErrorScreen(fragment.getActivity().getString(R.string.no_connection));
                 }
             }
         }

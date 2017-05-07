@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import com.sherdle.webtoapp.Config;
 import com.sherdle.webtoapp.R;
 import com.sherdle.webtoapp.activity.MainActivity;
+import com.sherdle.webtoapp.fragment.WebFragment;
 import com.sherdle.webtoapp.widget.AdvancedWebView;
 
 /**
@@ -33,7 +34,7 @@ import com.sherdle.webtoapp.widget.AdvancedWebView;
  */
 public class WebToAppChromeClient extends WebChromeClient {
 
-    protected Activity activity;
+    protected WebFragment fragment;
     protected FrameLayout container;
     protected WebView popupView;
 
@@ -47,14 +48,14 @@ public class WebToAppChromeClient extends WebChromeClient {
     private int mOriginalOrientation;
 
     public WebToAppChromeClient(
-            Activity activity,
+            WebFragment fragment,
             FrameLayout container,
             AdvancedWebView browser,
             SwipeRefreshLayout swipeLayout,
             ProgressBar progressBar)
     {
         super();
-        this.activity = activity;
+        this.fragment = fragment;
         this.container = container;
         this.browser = browser;
         this.swipeLayout = swipeLayout;
@@ -66,12 +67,12 @@ public class WebToAppChromeClient extends WebChromeClient {
 
         this.browser.setVisibility(WebView.GONE);
 
-        this.popupView = new WebView(this.activity);
+        this.popupView = new WebView(this.fragment.getActivity());
 
         // setup popuview and add
         this.popupView.getSettings().setJavaScriptEnabled(true);
         this.popupView.setWebChromeClient(this);
-        this.popupView.setWebViewClient(new WebToAppWebClient(this.activity, popupView));
+        this.popupView.setWebViewClient(new WebToAppWebClient(this.fragment, popupView));
         this.popupView.setLayoutParams(new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.FILL_PARENT,
                 RelativeLayout.LayoutParams.FILL_PARENT
@@ -128,17 +129,17 @@ public class WebToAppChromeClient extends WebChromeClient {
     // Setting the title
     @Override
     public void onReceivedTitle(WebView view, String title) {
-        ((MainActivity) activity).setTitle(browser.getTitle());
+        ((MainActivity) fragment.getActivity()).setTitle(browser.getTitle());
     }
 
     @SuppressWarnings("unused")
     @Override
     public Bitmap getDefaultVideoPoster() {
-        if (activity == null) {
+        if (this.fragment.getActivity()== null) {
             return null;
         }
 
-        return BitmapFactory.decodeResource(activity
+        return BitmapFactory.decodeResource(fragment.getActivity()
                         .getApplicationContext().getResources(),
                 R.drawable.vert_loading);
     }
@@ -158,23 +159,23 @@ public class WebToAppChromeClient extends WebChromeClient {
         mCustomView = view;
         mCustomView.setBackgroundColor(Color.BLACK);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            mOriginalSystemUiVisibility = activity.getWindow()
+            mOriginalSystemUiVisibility = fragment.getActivity().getWindow()
                     .getDecorView().getSystemUiVisibility();
         }
-        mOriginalOrientation = activity.getRequestedOrientation();
+        mOriginalOrientation = fragment.getActivity().getRequestedOrientation();
 
         // 2. Stash the custom view callback
         mCustomViewCallback = callback;
 
         // 3. Add the custom view to the view hierarchy
-        FrameLayout decor = (FrameLayout) activity.getWindow()
+        FrameLayout decor = (FrameLayout) fragment.getActivity().getWindow()
                 .getDecorView();
         decor.addView(mCustomView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
 
         // 4. Change the state of the window
-        activity
+        fragment.getActivity()
                 .getWindow()
                 .getDecorView()
                 .setSystemUiVisibility(
@@ -184,7 +185,7 @@ public class WebToAppChromeClient extends WebChromeClient {
                                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE);
-        activity
+        fragment.getActivity()
                 .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
@@ -192,17 +193,17 @@ public class WebToAppChromeClient extends WebChromeClient {
     @Override
     public void onHideCustomView() {
         // 1. Remove the custom view
-        FrameLayout decor = (FrameLayout) activity.getWindow()
+        FrameLayout decor = (FrameLayout) fragment.getActivity().getWindow()
                 .getDecorView();
         decor.removeView(mCustomView);
         mCustomView = null;
 
         // 2. Restore the state to it's original form
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            activity.getWindow().getDecorView()
+            fragment.getActivity().getWindow().getDecorView()
                     .setSystemUiVisibility(mOriginalSystemUiVisibility);
         }
-        activity.setRequestedOrientation(mOriginalOrientation);
+        fragment.getActivity().setRequestedOrientation(mOriginalOrientation);
 
         // 3. Call the custom view callback
         mCustomViewCallback.onCustomViewHidden();

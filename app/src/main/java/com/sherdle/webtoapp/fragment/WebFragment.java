@@ -19,8 +19,10 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 import android.webkit.WebSettings.PluginState;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
@@ -145,10 +147,10 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
             browser.getSettings().setSupportMultipleWindows(true);
         }
 
-        webClient = new WebToAppWebClient(getActivity(), browser);
+        webClient = new WebToAppWebClient(this, browser);
         browser.setWebViewClient(webClient);
 
-        chromeClient = new WebToAppChromeClient(getActivity(), rl, browser, swipeLayout, progressBar);
+        chromeClient = new WebToAppChromeClient(this, rl, browser, swipeLayout, progressBar);
         browser.setWebChromeClient(chromeClient);
 
         // load url (if connection available
@@ -158,6 +160,12 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
                 browser.loadUrl(pushurl);
             } else {
                 browser.loadUrl(mainUrl);
+            }
+        } else {
+            try {
+                ((MainActivity) getActivity()).hideSplash();
+            } catch (Exception e){
+                e.printStackTrace();
             }
         }
     }
@@ -251,7 +259,6 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
      * Show an interstitial ad
      */
     private void showInterstitial(){
-        //if (fromPager) return;
         if (getResources().getString(R.string.ad_interstitial_id).length() == 0) return;
         if (Config.INTERSTITIAL_PAGE_INTERVAL == 0) return;
 
@@ -283,18 +290,24 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
     public void onPageFinished(String url) {
         if (!url.equals(mainUrl))
             showInterstitial();
+
+        try {
+            ((MainActivity) getActivity()).hideSplash();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        hideErrorScreen();
     }
 
     @Override
     public void onPageError(int errorCode, String description, String failingUrl) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onExternalPageRequest(String url) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -307,9 +320,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
     public void shareURL() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        String appname = getString(R.string.app_name);
-        // This will put the share text:
-        // "I came across "BrowserTitle" using "appname"
+        String appName = getString(R.string.app_name);
         shareIntent
                 .putExtra(
                         Intent.EXTRA_TEXT,
@@ -319,10 +330,29 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
                                 + " "
                                 + getText(R.string.share2)
                                 + " "
-                                + appname
+                                + appName
                                 + " https://play.google.com/store/apps/details?id=" + getActivity()
                                 .getPackageName()));
         startActivity(Intent.createChooser(shareIntent,
                 getText(R.string.sharetitle)));
+    }
+
+    public void showErrorScreen(String message) {
+        final View stub = rl.findViewById(R.id.empty_view);
+        stub.setVisibility(View.VISIBLE);
+
+        ((TextView) stub.findViewById(R.id.title)).setText(message);
+        ((Button) stub.findViewById(R.id.retry_button)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                browser.reload();
+            }
+        });
+    }
+
+    public void hideErrorScreen(){
+        final View stub = rl.findViewById(R.id.empty_view);
+        if (stub.getVisibility() == View.VISIBLE)
+        stub.setVisibility(View.GONE);
     }
 }

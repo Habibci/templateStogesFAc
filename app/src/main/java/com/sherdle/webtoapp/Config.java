@@ -21,7 +21,7 @@ public class Config {
     //Set to true if you would like to enable pull to refresh
     public static boolean PULL_TO_REFRESH = true;
     //Set to true if you would like to hide the actionbar on when scrolling down. Only applies if HIDE_ACTIONBAR is false
-    public static boolean COLLAPSING_ACTIONBAR = true;
+    public static boolean COLLAPSING_ACTIONBAR = false;
     //Set to true if you would like to use the round 'pull to refresh style' loading indicator instead of a progress bar
     public static boolean LOAD_AS_PULL = true;
 
@@ -29,9 +29,9 @@ public class Config {
      * URL / LIST OF URLS
      */
     //The titles of your web items
-    public static final Object[] TITLES = new Object[]{"Google Home"};
+    public static final Object[] TITLES = new Object[]{"Google Home", "Bing"};
     //The URL's of your web items
-    public static final String[] URLS = new String[]{"http://google.com"};
+    public static final String[] URLS = new String[]{"http://google.com", "http://bing.com"};
     //The icons of your web items
     public static final int[] ICONS = new int[]{};
 
@@ -54,11 +54,11 @@ public class Config {
     //Defines a set of urls/patterns that should exlusively load inside the webview. All other urls are loaded outside the WebView. Ignored if no urls are defined.
     public static final String[] OPEN_ALL_OUTSIDE_EXCEPT = new String[]{};
 
-    //Set to true if you would like to hide the drawer header. Only applies if USE_DRAWER is true
-    public static boolean HIDE_DRAWER_HEADER = false;
+    //Set to true if you would like to hide the drawer header. (requires USE_DRAWER)
+    public static boolean HIDE_DRAWER_HEADER =false;
     //Set to true if you would like to hide navigation in the toolbar (i.e. back, forward)
     public static boolean HIDE_MENU_NAVIGATION = false;
-    //Set to true if you would like to hide navigation in the toolbar (i.e. back, forward)
+    //Set to true if you would like to sharing in the toolbar
     public static boolean HIDE_MENU_SHARE = false;
     //Set to true if you would like to show a link to the apps notification settings
     public static boolean SHOW_NOTIFICATION_SETTINGS = true;
