@@ -1,11 +1,12 @@
 <resources>
     <!--Configure your App's name, as displayed in the launcher and optionally the Toolbar -->
     <string name="app_name">WebViewAppName</string>
+
     <!--Configure your Admob ID below, or leave empty if you do not want to enable Ads in your app -->
     <string name="ad_banner_id"><!--admob ad banner unit id here --></string>
     <string name="ad_interstitial_id"><!-- admob ad interstitial id here --></string>
 
-
+    <!-- Translate Strings below -->
     <string name="previous">Previous</string>
     <string name="next">Next</string>
     <string name="stop">Stop</string>
@@ -36,10 +37,7 @@
     <string name="common_permission_explaination">In order to use this app, you need to grant us some permissions.</string>
     <string name="common_permission_grant">Grant permission</string>
 
-    <string name="share1">I came across </string>
-    <!--  we will automatically website title here-->
-    <string name="share2"> using </string>
-    <!--  we will automatically put your apps name and link here -->
+    <string name="share_body">I came across %1$s using %2$s</string>
 
     <string name="rate_later">Perhaps later</string>
     <string name="rate_never">No thanks</string>

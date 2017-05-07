@@ -1,8 +1,6 @@
 package com.sherdle.webtoapp.widget.webview;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +16,6 @@ import android.widget.Toast;
 
 import com.sherdle.webtoapp.Config;
 import com.sherdle.webtoapp.R;
-import com.sherdle.webtoapp.activity.MainActivity;
 import com.sherdle.webtoapp.fragment.WebFragment;
 
 public class WebToAppWebClient extends WebViewClient {

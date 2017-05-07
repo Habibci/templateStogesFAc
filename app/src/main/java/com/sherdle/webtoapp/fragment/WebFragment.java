@@ -324,15 +324,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
         shareIntent
                 .putExtra(
                         Intent.EXTRA_TEXT,
-                        (getText(R.string.share1)
-                                + " "
-                                + browser.getTitle()
-                                + " "
-                                + getText(R.string.share2)
-                                + " "
-                                + appName
-                                + " https://play.google.com/store/apps/details?id=" + getActivity()
-                                .getPackageName()));
+                        String.format(getString(R.string.share_body), browser.getTitle(), appName + " https://play.google.com/store/apps/details?id=" + getActivity().getPackageName()));
         startActivity(Intent.createChooser(shareIntent,
                 getText(R.string.sharetitle)));
     }
