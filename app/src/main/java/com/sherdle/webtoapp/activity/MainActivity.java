@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);
 
-        mSlidingTabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.accent));
         mSlidingTabLayout.setupWithViewPager(mViewPager);
         mSlidingTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
