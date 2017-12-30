@@ -29,7 +29,7 @@ public class Config {
      * URL / LIST OF URLS
      */
     //The titles of your web items
-    public static final Object[] TITLES = new Object[]{"Google Home", "Bing"};
+    public static final Object[] TITLES = new Object[]{"Google", "Bing"};
     //The URL's of your web items
     public static final String[] URLS = new String[]{"http://google.com", "http://bing.com"};
     //The icons of your web items
@@ -76,9 +76,8 @@ public class Config {
     //The image/icon used for in the drawer header
     public static int DRAWER_ICON = R.mipmap.ic_launcher;
 
-    //The frequency in which interstitial ads are shown for when loading pages
-    //('0' to never show, '1' to always show, '2' to show 1 out of 2, etc)
-    public static final int INTERSTITIAL_PAGE_INTERVAL = 2;
-    //The frequency in which interstitial ads are shown when switching tabs/menu items
-    public static final int INTERSTITIAL_NAVIGATION_INTERVAL = 2;
+    //Show interstitials when browsing web pages (or only during drawer/tab navigation)
+    public static final boolean INTERSTITIAL_PAGE_LOAD = true;
+    //The frequency in which interstitial ads are shown
+    public static final int INTERSTITIAL_INTERVAL = 2;
 }

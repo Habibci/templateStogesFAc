@@ -56,9 +56,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
     public String mainUrl = null;
     static String URL = "url";
     public int firstLoad = 0;
-
-    //Keep track of the interstitials we show
-    private int interstitialCount = -1;
+    private boolean clearHistory = false;
 
     public WebFragment() {
         // Required empty public constructor
@@ -74,6 +72,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
 
     public void setBaseUrl(String url){
         this.mainUrl = url;
+        this.clearHistory = true;
         browser.loadUrl(mainUrl);
     }
 
@@ -255,46 +254,24 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
         }
     }
 
-    /**
-     * Show an interstitial ad
-     */
-    private void showInterstitial(){
-        if (getResources().getString(R.string.ad_interstitial_id).length() == 0) return;
-        if (Config.INTERSTITIAL_PAGE_INTERVAL == 0) return;
-
-        if (interstitialCount == (Config.INTERSTITIAL_PAGE_INTERVAL - 1)) {
-            final InterstitialAd mInterstitialAd = new InterstitialAd(getActivity());
-            mInterstitialAd.setAdUnitId(getResources().getString(R.string.ad_interstitial_id));
-            AdRequest adRequestInter = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
-            mInterstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    super.onAdLoaded();
-                    mInterstitialAd.show();
-                }
-                @Override
-                public void onAdClosed() {
-                    super.onAdClosed();
-                }
-            });
-            mInterstitialAd.loadAd(adRequestInter);
-
-            interstitialCount = 0;
-        } else {
-            interstitialCount++;
-        }
-
-    }
-
     @Override
     public void onPageFinished(String url) {
-        if (!url.equals(mainUrl))
-            showInterstitial();
+        if (!url.equals(mainUrl)
+                && getActivity() != null
+                && getActivity() instanceof MainActivity
+                && Config.INTERSTITIAL_PAGE_LOAD)
+            ((MainActivity) getActivity()).showInterstitial();
 
         try {
             ((MainActivity) getActivity()).hideSplash();
         } catch (Exception e){
             e.printStackTrace();
+        }
+
+        if (clearHistory)
+        {
+            clearHistory = false;
+            browser.clearHistory();
         }
 
         hideErrorScreen();
@@ -334,9 +311,10 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
         stub.setVisibility(View.VISIBLE);
 
         ((TextView) stub.findViewById(R.id.title)).setText(message);
-        ((Button) stub.findViewById(R.id.retry_button)).setOnClickListener(new View.OnClickListener() {
+        stub.findViewById(R.id.retry_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                browser.loadUrl("javascript:document.open();document.close();");
                 browser.reload();
             }
         });

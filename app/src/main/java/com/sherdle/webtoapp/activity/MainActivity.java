@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
 
     //Keep track of the interstitials we show
     private int interstitialCount = -1;
+    private InterstitialAd mInterstitialAd;
 
 
     @Override
@@ -196,6 +197,21 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
         } else {
             AdView adView = (AdView) findViewById(R.id.adView);
             adView.setVisibility(View.GONE);
+        }
+        if (getResources().getString(R.string.ad_interstitial_id).length() > 0 && Config.INTERSTITIAL_INTERVAL > 0){
+            mInterstitialAd = new InterstitialAd(this);
+            mInterstitialAd.setAdUnitId(getResources().getString(R.string.ad_interstitial_id));
+            AdRequest adRequestInter = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+            mInterstitialAd.loadAd(adRequestInter);
+
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdClosed() {
+                    // Load the next interstitial.
+                    mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
+                }
+
+            });
         }
 
         //Application rating
@@ -509,28 +525,11 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
     /**
      * Show an interstitial ad
      */
-    private void showInterstitial(){
-        //if (fromPager) return;
-        if (getResources().getString(R.string.ad_interstitial_id).length() == 0) return;
-        if (Config.INTERSTITIAL_NAVIGATION_INTERVAL == 0) return;
-
-        if (interstitialCount == (Config.INTERSTITIAL_NAVIGATION_INTERVAL - 1)) {
-            final InterstitialAd mInterstitialAd = new InterstitialAd(this);
-            mInterstitialAd.setAdUnitId(getResources().getString(R.string.ad_interstitial_id));
-            AdRequest adRequestInter = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
-            mInterstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    super.onAdLoaded();
-                    mInterstitialAd.show();
-                }
-
-                @Override
-                public void onAdClosed() {
-                    super.onAdClosed();
-                }
-            });
-            mInterstitialAd.loadAd(adRequestInter);
+    public void showInterstitial(){
+        if (interstitialCount == (Config.INTERSTITIAL_INTERVAL - 1)) {
+            if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            }
 
             interstitialCount = 0;
         } else {
@@ -558,7 +557,7 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
             if (Config.ICONS.length > i)
                 icon = Config.ICONS[i];
 
-            menu.add("Title", icon, new Action(title, Config.URLS[i]));
+            menu.add((String) Config.TITLES[i], icon, new Action(title, Config.URLS[i]));
         }
 
         menuItemClicked(menu.getFirstMenuItem().getValue(), menu.getFirstMenuItem().getKey());

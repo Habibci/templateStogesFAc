@@ -41,7 +41,7 @@ public class App extends Application {
     }
 
     // This fires when a notification is opened by tapping on it or one is received while the app is running.
-    class NotificationHandler implements OneSignal.NotificationOpenedHandler {
+    private class NotificationHandler implements OneSignal.NotificationOpenedHandler {
         // This fires when a notification is opened by tapping on it.
         @Override
         public void notificationOpened(OSNotificationOpenResult result) {
