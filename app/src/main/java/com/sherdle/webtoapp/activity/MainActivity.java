@@ -271,6 +271,9 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
         if (Config.HIDE_MENU_SHARE) {
             menu.findItem(R.id.share).setVisible(false);
         }
+        if (Config.HIDE_MENU_HOME) {
+            menu.findItem(R.id.home).setVisible(false);
+        }
         if (Config.HIDE_MENU_NAVIGATION){
             menu.findItem(R.id.previous).setVisible(false);
             menu.findItem(R.id.next).setVisible(false);
@@ -337,7 +340,8 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
                 this.getText(R.string.dialog_about));
         Linkify.addLinks(s, Linkify.WEB_URLS);
         message.setTextSize(15f);
-        message.setPadding(20, 15, 15, 15);
+        int padding  = Math.round(20 * getResources().getDisplayMetrics().density);
+        message.setPadding(padding, 15, padding, 15);
         message.setText(Html.fromHtml(getString(R.string.dialog_about)));
         message.setMovementMethod(LinkMovementMethod.getInstance());
 

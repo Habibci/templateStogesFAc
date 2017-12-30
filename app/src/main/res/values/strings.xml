@@ -23,7 +23,7 @@
     <string name="download">Download</string>
     <string name="saved">Saved at: </string>
     <string name="sharetitle">Share this!</string>
-    <string name="notification_settings">Notification settings</string>
+    <string name="notification_settings">Notifications</string>
     <string name="download_fail">Download failed</string>
     <string name="download_done">The file has been saved in the downloads folder, open it by tapping the file in your notifications</string>
     <string name="exit_message">Thank you for using our app!</string>

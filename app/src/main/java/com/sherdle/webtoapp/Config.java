@@ -60,6 +60,8 @@ public class Config {
     public static boolean HIDE_MENU_NAVIGATION = false;
     //Set to true if you would like to sharing in the toolbar
     public static boolean HIDE_MENU_SHARE = false;
+    //Set to true if you would like to hide the home button
+    public static boolean HIDE_MENU_HOME = true;
     //Set to true if you would like to show a link to the apps notification settings
     public static boolean SHOW_NOTIFICATION_SETTINGS = true;
 
