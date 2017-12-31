@@ -3,6 +3,7 @@ package com.sherdle.webtoapp;
 import android.app.Application;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -34,10 +35,8 @@ public class App extends Application {
         }
 
         //OneSignal Push
-        OneSignal.startInit(this)
-                .setNotificationOpenedHandler(new NotificationHandler())
-                .init();
-
+        if (!TextUtils.isEmpty(getString(R.string.onesignal_app_id)))
+            OneSignal.init(this, getString(R.string.onesignal_google_project_number), getString(R.string.onesignal_app_id), new NotificationHandler());
     }
 
     // This fires when a notification is opened by tapping on it or one is received while the app is running.
@@ -47,14 +46,18 @@ public class App extends Application {
         public void notificationOpened(OSNotificationOpenResult result) {
             try {
                 JSONObject data = result.notification.payload.additionalData;
-                String url = (data != null) ? data.optString("url", null) : null;
-                if (url != null) {
-                    if (result.notification.isAppInFocus) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+                String webViewUrl = (data != null) ? data.optString("url", null) : null;
+                String browserUrl = result.notification.payload.launchURL;
+
+                if (webViewUrl != null || browserUrl != null) {
+                    if (browserUrl != null || result.notification.isAppInFocus) {
+                        browserUrl = (browserUrl == null) ? webViewUrl : browserUrl;
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserUrl));
                         startActivity(browserIntent);
-                        Log.v("INFO", "Received notification while app was on foreground");
+                        Log.v("INFO", "Received notification while app was on foreground or url for browser");
                     } else {
-                        push_url = url;
+                        push_url = webViewUrl;
                     }
                 } else if (!result.notification.isAppInFocus) {
                     Intent mainIntent;

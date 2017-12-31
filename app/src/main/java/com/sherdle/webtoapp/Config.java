@@ -42,8 +42,7 @@ public class Config {
     //If you would like to use analytics, you can enter an analytics ID here
     public static String ANALYTICS_ID = "UA-46717142-1";
 
-    //Google sender ID and OneSignal ID have to be edited in build.gradle
-    //Admob IDs have to be configured in Strings.xml
+    //OneSignal and Admob IDs have to be configured in Strings.xml
 
     /**
      * ADVANCED SETTINGS
