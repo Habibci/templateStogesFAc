@@ -16,29 +16,28 @@ package com.sherdle.webtoapp.widget;
  * limitations under the License.
  */
 
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.Manifest;
+import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.view.ViewGroup;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
 import android.os.Environment;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.webkit.CookieManager;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import android.net.http.SslError;
-import android.view.InputEvent;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.webkit.ClientCertRequest;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
@@ -70,7 +69,6 @@ import android.util.AttributeSet;
 import android.webkit.WebView;
 
 import com.sherdle.webtoapp.R;
-import com.sherdle.webtoapp.activity.MainActivity;
 
 import java.util.MissingResourceException;
 import java.util.Locale;
@@ -118,6 +116,7 @@ public class AdvancedWebView extends WebView {
 	protected WebChromeClient mCustomWebChromeClient;
 	protected boolean mGeolocationEnabled;
 	protected final Map<String, String> mHttpHeaders = new HashMap<String, String>();
+    private String mCameraPhotoPath;
 
 	public AdvancedWebView(Context context) {
 		super(context);
@@ -266,7 +265,13 @@ public class AdvancedWebView extends WebView {
 						mFileUploadCallbackSecond.onReceiveValue(dataUris);
 						mFileUploadCallbackSecond = null;
 					}
-				}
+				} else {
+                    if(mCameraPhotoPath != null) {
+                        Uri[] dataUris = new Uri[]{Uri.parse(mCameraPhotoPath)};
+                        mFileUploadCallbackSecond.onReceiveValue(dataUris);
+                        mFileUploadCallbackSecond = null;
+                    }
+                }
 			}
 			else {
 				if (mFileUploadCallbackFirst != null) {
@@ -618,13 +623,13 @@ public class AdvancedWebView extends WebView {
 
 			// file upload callback (Android 4.1 (API level 16) -- Android 4.3 (API level 18)) (hidden method)
 			public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
-				openFileInput(uploadMsg, null);
+				openFileInput(uploadMsg, null, new String[]{acceptType});
 			}
 
 			// file upload callback (Android 5.0 (API level 21) -- current) (public method)
 			@SuppressWarnings("all")
 			public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-				openFileInput(null, filePathCallback);
+				openFileInput(null, filePathCallback, fileChooserParams.getAcceptTypes());
 				return true;
 			}
 
@@ -1049,7 +1054,7 @@ public class AdvancedWebView extends WebView {
 	}
 
 	@SuppressLint("NewApi")
-	protected void openFileInput(final ValueCallback<Uri> fileUploadCallbackFirst, final ValueCallback<Uri[]> fileUploadCallbackSecond) {
+	protected void openFileInput(final ValueCallback<Uri> fileUploadCallbackFirst, final ValueCallback<Uri[]> fileUploadCallbackSecond, String acceptTypes[]) {
 		if (mFileUploadCallbackFirst != null) {
 			mFileUploadCallbackFirst.onReceiveValue(null);
 		}
@@ -1064,6 +1069,48 @@ public class AdvancedWebView extends WebView {
 		i.addCategory(Intent.CATEGORY_OPENABLE);
 		i.setType("*/*");
 
+		//If only accepts images and app has permission to write storage; allow user to take photo
+		if (acceptTypes.length == 1 &&
+                (acceptTypes[0].contains("image")) &&
+                ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(mActivity.get().getPackageManager()) != null) {
+                // Create the File where the photo should go
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                    takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath);
+                } catch (IOException e) { }
+
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+                    mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                            Uri.fromFile(photoFile));
+                } else {
+                    takePictureIntent = null;
+                }
+            }
+
+            Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            contentSelectionIntent.setType("image/*");
+
+            Intent[] intentArray;
+            if (takePictureIntent != null) {
+                intentArray = new Intent[]{takePictureIntent};
+            } else {
+                intentArray = new Intent[0];
+            }
+
+            Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
+            chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
+            chooserIntent.putExtra(Intent.EXTRA_TITLE, "Image Chooser");
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+            i = chooserIntent;
+        }
+
 		if (mFragment != null && mFragment.get() != null && Build.VERSION.SDK_INT >= 11) {
 			mFragment.get().startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), mRequestCodeFilePicker);
 		}
@@ -1071,6 +1118,27 @@ public class AdvancedWebView extends WebView {
 			mActivity.get().startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), mRequestCodeFilePicker);
 		}
 	}
+
+    /**
+     * More info this method can be found at
+     * http://developer.android.com/training/camera/photobasics.html
+     *
+     * @return
+     * @throws IOException
+     */
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File imageFile = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        return imageFile;
+    }
 
 	/**
 	 * Returns whether file uploads can be used on the current device (generally all platform versions except for 4.4)
