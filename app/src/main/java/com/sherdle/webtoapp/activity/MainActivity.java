@@ -8,7 +8,7 @@ import com.sherdle.webtoapp.R;
 import com.sherdle.webtoapp.drawer.menu.Action;
 import com.sherdle.webtoapp.drawer.menu.MenuItemCallback;
 import com.sherdle.webtoapp.drawer.menu.SimpleMenu;
-import com.sherdle.webtoapp.drawer.menu.SimpleSubMenu;
+import com.sherdle.webtoapp.util.ThemeUtils;
 import com.sherdle.webtoapp.widget.SwipeableViewPager;
 import com.sherdle.webtoapp.widget.webview.WebToAppWebClient;
 import com.tjeannin.apprate.AppRate;
@@ -58,10 +58,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class MainActivity extends AppCompatActivity implements MenuItemCallback{
 
     //Views
@@ -91,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ThemeUtils.setTheme(this);
+
         setContentView(R.layout.activity_main);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -281,6 +279,8 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
         if (!Config.SHOW_NOTIFICATION_SETTINGS || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
             menu.findItem(R.id.notification_settings).setVisible(false);
         }
+
+        ThemeUtils.tintAllIcons(menu, this);
 
         return true;
     }

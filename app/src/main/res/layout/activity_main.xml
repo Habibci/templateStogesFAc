@@ -40,9 +40,9 @@
 
             <android.support.design.widget.AppBarLayout
                 android:id="@+id/header_container"
+                style="@style/ToolBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
                 android:elevation="3dp"
                 android:fitsSystemWindows="false"
                 android:orientation="vertical"
@@ -51,9 +51,9 @@
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
+                    style="@style/ToolBarStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/colorPrimary"
                     android:minHeight="?attr/actionBarSize"
                     app:popupTheme="@style/Theme.AppCompat.Light.DarkActionBar" />
 
@@ -62,12 +62,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="?attr/actionBarSize"
                     android:layout_gravity="center_horizontal"
-                    android:background="?attr/colorPrimary"
                     app:tabGravity="fill"
                     app:tabMode="scrollable"
-                    app:tabSelectedTextColor="?android:textColorPrimary"
-                    app:tabTextColor="?android:textColorSecondary"
-                    app:tabIndicatorColor="@android:color/white"/>
+                    app:tabIndicatorColor="?toolbarForeground"
+                    app:tabSelectedTextColor="?toolbarForeground"
+                    app:tabTextColor="?toolbarForeground"/>
 
             </android.support.design.widget.AppBarLayout>
 
@@ -89,10 +88,11 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/drawerBackground"
         android:fitsSystemWindows="true"
+        app:itemBackground="@drawable/drawer_item_background"
+        app:itemTextColor="@color/drawerText"
         app:headerLayout="@layout/drawer_header"
-        app:itemIconTint="@drawable/drawer_color"
-        app:itemTextColor="@drawable/drawer_color"
         app:menu="@menu/activity_main_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

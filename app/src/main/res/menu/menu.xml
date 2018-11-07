@@ -9,7 +9,7 @@
         android:title="@string/previous"/>
     <item
         android:id="@+id/share"
-        android:icon="@drawable/ic_action_social_share"
+        android:icon="@drawable/ic_action_share"
         app:showAsAction="always"
         android:title="@string/share"/>
     <item
@@ -20,7 +20,7 @@
         android:title="@string/notification_settings"/>
     <item
         android:id="@+id/home"
-        android:icon="@drawable/ic_action_action_home"
+        android:icon="@drawable/ic_action_home"
         app:showAsAction="ifRoom"
         android:title="@string/home"/>
     <item

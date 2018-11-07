@@ -24,6 +24,8 @@ public class Config {
     public static boolean COLLAPSING_ACTIONBAR = false;
     //Set to true if you would like to use the round 'pull to refresh style' loading indicator instead of a progress bar
     public static boolean LOAD_AS_PULL = true;
+    //Set to true if you want to use a light toolbar
+    public static boolean LIGHT_TOOLBAR_THEME = true;
 
     /**
      * URL / LIST OF URLS
@@ -31,7 +33,7 @@ public class Config {
     //The titles of your web items
     public static final Object[] TITLES = new Object[]{"Google", "Bing"};
     //The URL's of your web items
-    public static final String[] URLS = new String[]{"http://google.com", "http://bing.com"};
+    public static final String[] URLS = new String[]{"https://nl.imgbb.com", "http://bing.com"};
     //The icons of your web items
     public static final int[] ICONS = new int[]{};
 
@@ -69,13 +71,13 @@ public class Config {
     //If you would like to show the splash screen for an additional amount of time after page load, define it here (MS)
     public static int SPLASH_SCREEN_DELAY = 0;
     //Permissions required to use the app (should also be in manifest.xml)
-    public static String[] PERMISSIONS_REQUIRED = new String[]{Manifest.permission.ACCESS_FINE_LOCATION}; //Manifest.permission.PERMISSION_NAME
+    public static String[] PERMISSIONS_REQUIRED = new String[]{}; //Manifest.permission.PERMISSION_NAME
     //Always use the app name as actionbar title (only applies for if USE_DRAWER is false and number of tabs == 1)
     public static boolean STATIC_TOOLBAR_TITLE = false;
     //Load a webpage when no internet connection was found (must be in assets). Leave empty to show dialog.
     public static String NO_CONNECTION_PAGE = "";
     //The image/icon used for in the drawer header
-    public static int DRAWER_ICON = R.mipmap.ic_launcher;
+    public static int DRAWER_ICON = R.drawable.vert_loading;
 
     //Show interstitials when browsing web pages (or only during drawer/tab navigation)
     public static final boolean INTERSTITIAL_PAGE_LOAD = true;
