@@ -1,8 +1,8 @@
 package com.sherdle.webtoapp;
 
-import android.app.Application;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -14,7 +14,7 @@ import com.sherdle.webtoapp.activity.MainActivity;
 
 import org.json.JSONObject;
 
-public class App extends Application { 
+public class App extends MultiDexApplication {
 	
 	  public static GoogleAnalytics analytics;
 	  public static Tracker tracker;
