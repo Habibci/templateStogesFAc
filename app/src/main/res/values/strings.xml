@@ -7,7 +7,6 @@
     <string name="ad_interstitial_id"><!--admob ad interstitial id here --></string>
 
     <string name="onesignal_app_id"><!--onesignal app id here --></string>
-    <string name="onesignal_google_project_number"><!--onesignal google project number here --></string>
 
     <!-- Translate Strings below -->
     <string name="previous">Previous</string>

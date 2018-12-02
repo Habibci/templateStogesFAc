@@ -36,7 +36,7 @@ public class App extends MultiDexApplication {
 
         //OneSignal Push
         if (!TextUtils.isEmpty(getString(R.string.onesignal_app_id)))
-            OneSignal.init(this, getString(R.string.onesignal_google_project_number), getString(R.string.onesignal_app_id), new NotificationHandler());
+            OneSignal.init(this, "REMOTE", getString(R.string.onesignal_app_id), new NotificationHandler());
     }
 
     // This fires when a notification is opened by tapping on it or one is received while the app is running.

@@ -19,7 +19,7 @@ buildscript {
 ext {
     supportlib_version = '28.0.0'
     gps_version = '[16.0.0, 17.0.0)'
-    fb_version = '[15.0.0, 17.0.0)'
+    fb_version = '[16.0.0, 18.0.0)'
 }
 
 //Ensure that all dependencies use the same version of the Android Support library
