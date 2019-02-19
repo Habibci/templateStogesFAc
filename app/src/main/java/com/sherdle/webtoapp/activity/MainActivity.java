@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
 
         setSupportActionBar(mToolbar);
 
+
         mAdapter = new NavigationAdapter(getSupportFragmentManager(), this);
 
         final Intent intent = getIntent();
@@ -111,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
         //Hiding ActionBar/Toolbar
         if (Config.HIDE_ACTIONBAR)
             getSupportActionBar().hide();
-
         if (getHideTabs())
             mSlidingTabLayout.setVisibility(View.GONE);
 
@@ -232,6 +232,15 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
             findViewById(R.id.imageLoading1).setVisibility(View.VISIBLE);
             //getFragment().browser.setVisibility(View.GONE);
         }
+
+        //Toolbar styling
+        if (Config.TOOLBAR_ICON != 0) {
+            getSupportActionBar().setTitle("");
+            ImageView imageView = findViewById(R.id.toolbar_icon);
+            imageView.setImageResource(Config.TOOLBAR_ICON);
+            imageView.setVisibility(View.VISIBLE);
+        }
+
     }
 
     // using the back button of the device

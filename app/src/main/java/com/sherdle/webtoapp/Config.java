@@ -1,8 +1,5 @@
 package com.sherdle.webtoapp;
 
-import android.*;
-import android.Manifest;
-
 public class Config {
 
     /**
@@ -78,6 +75,8 @@ public class Config {
     public static String NO_CONNECTION_PAGE = "";
     //The image/icon used for in the drawer header
     public static int DRAWER_ICON = R.drawable.vert_loading;
+    //The image/icon used for the toolbar
+    public static int TOOLBAR_ICON = 0;
 
     //Show interstitials when browsing web pages (or only during drawer/tab navigation)
     public static final boolean INTERSTITIAL_PAGE_LOAD = true;
