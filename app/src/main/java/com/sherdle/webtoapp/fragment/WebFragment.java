@@ -310,8 +310,12 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
         stub.findViewById(R.id.retry_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                browser.loadUrl("javascript:document.open();document.close();");
-                browser.reload();
+                if (browser.getUrl() == null) {
+                    browser.loadUrl(mainUrl);
+                } else {
+                    browser.loadUrl("javascript:document.open();document.close();");
+                    browser.reload();
+                }
             }
         });
     }
