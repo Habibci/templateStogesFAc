@@ -116,6 +116,14 @@ public class WebToAppChromeClient extends WebChromeClient {
                     swipeLayout.setRefreshing(false);
                 }
             }
+
+            if (progress > 80){
+                try {
+                    ((MainActivity) fragment.getActivity()).hideSplash();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
