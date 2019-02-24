@@ -180,7 +180,12 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
                 navigationView.getHeaderView(0).setVisibility(View.GONE);
                 navigationView.setFitsSystemWindows(false);
             } else {
-                ((ImageView) navigationView.getHeaderView(0).findViewById(R.id.drawer_icon)).setImageResource(Config.DRAWER_ICON);
+                if (Config.DRAWER_ICON != R.mipmap.ic_launcher)
+                    ((ImageView) navigationView.getHeaderView(0).findViewById(R.id.drawer_icon)).setImageResource(Config.DRAWER_ICON);
+                else {
+                    ((ImageView) navigationView.getHeaderView(0).findViewById(R.id.launcher_icon)).setVisibility(View.VISIBLE);
+                    ((ImageView) navigationView.getHeaderView(0).findViewById(R.id.drawer_icon)).setVisibility(View.INVISIBLE);
+                }
             }
         } else {
             ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);

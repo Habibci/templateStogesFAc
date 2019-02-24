@@ -22,7 +22,7 @@ public class Config {
     //Set to true if you would like to use the round 'pull to refresh style' loading indicator instead of a progress bar
     public static boolean LOAD_AS_PULL = true;
     //Set to true if you want to use a light toolbar
-    public static boolean LIGHT_TOOLBAR_THEME = true;
+    public static boolean LIGHT_TOOLBAR_THEME = false;
 
     /**
      * URL / LIST OF URLS
@@ -73,7 +73,7 @@ public class Config {
     public static boolean STATIC_TOOLBAR_TITLE = false;
     //Load a webpage when no internet connection was found (must be in assets). Leave empty to show dialog.
     public static String NO_CONNECTION_PAGE = "";
-    //The image/icon used for in the drawer header
+    //The image/icon used for in the drawer header (use R.mipmap.ic_launcher to show centered app icon)
     public static int DRAWER_ICON = R.drawable.vert_loading;
     //The image/icon used for the toolbar
     public static int TOOLBAR_ICON = 0;
