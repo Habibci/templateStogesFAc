@@ -239,6 +239,9 @@ public class MainActivity extends AppCompatActivity implements MenuItemCallback{
             ImageView imageView = findViewById(R.id.toolbar_icon);
             imageView.setImageResource(Config.TOOLBAR_ICON);
             imageView.setVisibility(View.VISIBLE);
+            if (!Config.USE_DRAWER){
+                imageView.setScaleType(ImageView.ScaleType.FIT_START);
+            }
         }
 
     }
