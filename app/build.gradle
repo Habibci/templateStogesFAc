@@ -27,10 +27,19 @@ android {
                 onesignal_app_id: '',
                 onesignal_google_project_number: 'REMOTE']
     }
+    signingConfigs {
+        release {
+            storeFile file("keystore.jks")
+            storePassword "e8Qypdjjxt7S2f"
+            keyAlias "keystore"
+            keyPassword "e8Qypdjjxt7S2f"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     dexOptions {

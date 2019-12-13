@@ -118,6 +118,12 @@ public class AdvancedWebView extends WebView {
 	protected final Map<String, String> mHttpHeaders = new HashMap<String, String>();
     private String mCameraPhotoPath;
 
+    /*
+     * We track this to account for a bug where onReceivedError is called when downloading files
+     * By tracking the latest download url, we can ignore any onReceivedError calls for this url.
+     */
+    public String lastDownloadUrl;
+
 	public AdvancedWebView(Context context) {
 		super(context);
 		init(context);
@@ -913,6 +919,7 @@ public class AdvancedWebView extends WebView {
 
 			@Override
 			public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+				AdvancedWebView.this.lastDownloadUrl = url;
 				if (mListener != null) {
 					mListener.onDownloadRequested(url, userAgent, contentDisposition, mimetype, contentLength);
 				}
@@ -925,8 +932,7 @@ public class AdvancedWebView extends WebView {
 	public void loadUrl(final String url, Map<String, String> additionalHttpHeaders) {
 		if (additionalHttpHeaders == null) {
 			additionalHttpHeaders = mHttpHeaders;
-		}
-		else if (mHttpHeaders.size() > 0) {
+		} else if (mHttpHeaders.size() > 0) {
 			additionalHttpHeaders.putAll(mHttpHeaders);
 		}
 

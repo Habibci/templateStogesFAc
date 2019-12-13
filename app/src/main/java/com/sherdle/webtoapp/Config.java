@@ -28,9 +28,9 @@ public class Config {
      * URL / LIST OF URLS
      */
     //The titles of your web items
-    public static final Object[] TITLES = new Object[]{"Google", "Bing"};
+    public static final Object[] TITLES = new Object[]{"Google"};
     //The URL's of your web items
-    public static final String[] URLS = new String[]{"https://nl.imgbb.com", "http://bing.com"};
+    public static final String[] URLS = new String[]{"https://www.google.com/"};
     //The icons of your web items
     public static final int[] ICONS = new int[]{};
 

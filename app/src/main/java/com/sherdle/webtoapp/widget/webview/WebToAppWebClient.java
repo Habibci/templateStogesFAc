@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.sherdle.webtoapp.Config;
 import com.sherdle.webtoapp.R;
 import com.sherdle.webtoapp.fragment.WebFragment;
+import com.sherdle.webtoapp.widget.AdvancedWebView;
 
 public class WebToAppWebClient extends WebViewClient {
 
@@ -99,7 +100,8 @@ public class WebToAppWebClient extends WebViewClient {
     @Override
     public void onReceivedError(WebView view, int errorCode,
                                 String description, String failingUrl) {
-        if (hasConnectivity("", false)) {
+        if (hasConnectivity("", false)
+                && !failingUrl.equals(((AdvancedWebView) view).lastDownloadUrl)) {
             //If an error occurred while we had connectivity, the page must be borken
             fragment.showErrorScreen(fragment.getActivity().getString(R.string.error));
         } else {
