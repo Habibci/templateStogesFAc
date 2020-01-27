@@ -2,12 +2,14 @@ package com.sherdle.webtoapp;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.multidex.MultiDexApplication;
+import androidx.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OneSignal;
 import com.sherdle.webtoapp.activity.MainActivity;
@@ -15,23 +17,15 @@ import com.sherdle.webtoapp.activity.MainActivity;
 import org.json.JSONObject;
 
 public class App extends MultiDexApplication {
-	
-	  public static GoogleAnalytics analytics;
-	  public static Tracker tracker;
 
       private String push_url = null;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override public void onCreate() {
         super.onCreate();
 
         if (Config.ANALYTICS_ID.length() > 0) {
-            analytics = GoogleAnalytics.getInstance(this);
-            analytics.setLocalDispatchPeriod(1800);
-
-            tracker = analytics.newTracker(Config.ANALYTICS_ID); // Replace with actual tracker/property Id
-            tracker.enableExceptionReporting(true);
-            tracker.enableAdvertisingIdCollection(true);
-            tracker.enableAutoActivityTracking(true);
+            mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         }
 
         //OneSignal Push

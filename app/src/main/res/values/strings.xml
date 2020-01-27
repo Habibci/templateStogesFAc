@@ -33,6 +33,7 @@
     <string name="dialog_about"><![CDATA[Thank you for downloading our application!]]></string>
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
+    <string name="notification_error_ssl_cert_invalid">The SSL Certificate of the server could not be verified. Would you like to continue?</string>
 
     <string name="download_permission_explaination">In order to download files, you need to grant us permission to your storage.\n\nAfter granting us access, you may go ahead and download the file.</string>
 

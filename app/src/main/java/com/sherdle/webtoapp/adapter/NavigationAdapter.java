@@ -4,14 +4,11 @@ import com.sherdle.webtoapp.Config;
 import com.sherdle.webtoapp.fragment.WebFragment;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
+
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 public class NavigationAdapter extends CacheFragmentStatePagerAdapter {
 

@@ -18,7 +18,9 @@ package com.sherdle.webtoapp.widget;
 
 import android.Manifest;
 import android.provider.MediaStore;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import android.view.ViewGroup;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
@@ -51,7 +53,6 @@ import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.PermissionRequest;
 import android.webkit.WebStorage.QuotaUpdater;
-import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.os.Build;
 import android.webkit.DownloadListener;
