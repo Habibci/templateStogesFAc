@@ -6,9 +6,7 @@ import androidx.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OneSignal;
@@ -24,13 +22,17 @@ public class App extends MultiDexApplication {
     @Override public void onCreate() {
         super.onCreate();
 
+        //TODO Do something else, i.e. test for presense of Firebase file or make this a boolean
         if (Config.ANALYTICS_ID.length() > 0) {
             mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+            FirebaseApp.initializeApp(this);
         }
 
         //OneSignal Push
-        if (!TextUtils.isEmpty(getString(R.string.onesignal_app_id)))
+        if (!TextUtils.isEmpty(getString(R.string.onesignal_app_id))) {
             OneSignal.init(this, "REMOTE", getString(R.string.onesignal_app_id), new NotificationHandler());
+            OneSignal.setInFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification);
+        }
     }
 
     // This fires when a notification is opened by tapping on it or one is received while the app is running.
