@@ -127,6 +127,7 @@ public class WebToAppWebClient extends WebViewClient {
         if (hasConnectivity("", false)
                 && !failingUrl.equals(((AdvancedWebView) view).lastDownloadUrl)) {
             //If an error occurred while we had connectivity, the page must be borken
+            System.out.println("OnErrorReceived:" + errorCode + ", " + description + ", " + failingUrl);
             fragment.showErrorScreen(fragment.getActivity().getString(R.string.error));
         } else {
             //If we don't have connectivity, and this isn't an online page, let hasConnectivity handle the error

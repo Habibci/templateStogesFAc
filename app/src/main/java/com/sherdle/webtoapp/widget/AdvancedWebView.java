@@ -1076,9 +1076,14 @@ public class AdvancedWebView extends WebView {
 		i.addCategory(Intent.CATEGORY_OPENABLE);
 		i.setType("*/*");
 
-		//If only accepts images and app has permission to write storage; allow user to take photo
-		if (acceptTypes.length == 1 &&
-                (acceptTypes[0].contains("image")) &&
+
+		boolean acceptsImagesOrEverything = false;
+		for (String acceptType : acceptTypes) {
+			if (acceptType.contains("image") || acceptType.isEmpty())
+				acceptsImagesOrEverything = true;
+		}
+		//If only accepts images, or accepts everything, and app has permission to write storage; allow user to take photo
+		if (acceptsImagesOrEverything &&
                 ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -1194,6 +1199,10 @@ public class AdvancedWebView extends WebView {
 		}
 
 		final Request request = new Request(Uri.parse(fromUrl));
+
+		String cookieString = CookieManager.getInstance().getCookie(fromUrl);
+		request.addRequestHeader("cookie", cookieString);
+
 		if (Build.VERSION.SDK_INT >= 11) {
 			request.allowScanningByMediaScanner();
 			request.setNotificationVisibility(Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
