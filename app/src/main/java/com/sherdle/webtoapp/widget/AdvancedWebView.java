@@ -17,6 +17,7 @@ package com.sherdle.webtoapp.widget;
  */
 
 import android.Manifest;
+import android.content.ClipData;
 import android.provider.MediaStore;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -256,31 +257,48 @@ public class AdvancedWebView extends WebView {
 		if (requestCode == mRequestCodeFilePicker) {
 			if (resultCode == Activity.RESULT_OK) {
 				if (intent != null) {
-					if (mFileUploadCallbackFirst != null) {
+					if (mFileUploadCallbackFirst != null) {                                // Callback for versions prior to Android 5.0 (type: Uri)
 						mFileUploadCallbackFirst.onReceiveValue(intent.getData());
 						mFileUploadCallbackFirst = null;
-					}
-					else if (mFileUploadCallbackSecond != null) {
+					} else if (mFileUploadCallbackSecond != null) {                            // Callback for Android 5.0+ versions (type: Uri array, Uri[])
 						Uri[] dataUris;
-						try {
-							dataUris = new Uri[] { Uri.parse(intent.getDataString()) };
+						if (intent.getData() != null) {                    // single file selected
+							try {
+								dataUris = new Uri[]{Uri.parse(intent.getDataString())};
+							} catch (Exception e) {
+								dataUris = null;
+							}
+							mFileUploadCallbackSecond.onReceiveValue(dataUris);
+							mFileUploadCallbackSecond = null;
+						} else {                                        // multiple files selected
+							if (intent.getClipData() != null) {
+								ClipData mClipData = intent.getClipData();
+								if (mClipData != null) {
+									int numFiles = mClipData.getItemCount();
+									Uri[] dataUrisMulti = new Uri[numFiles];
+									for (int i = 0; i < mClipData.getItemCount(); i++) {
+										ClipData.Item item = mClipData.getItemAt(i);
+										Uri uri = item.getUri();
+										try {
+											dataUrisMulti[i] = uri;
+										} catch (Exception e) {
+											dataUrisMulti = null;
+										}
+									}
+									mFileUploadCallbackSecond.onReceiveValue(dataUrisMulti);
+									mFileUploadCallbackSecond = null;
+								}
+							}
 						}
-						catch (Exception e) {
-							dataUris = null;
-						}
-
+					}
+				} else {
+					if(mCameraPhotoPath != null) {
+						Uri[] dataUris = new Uri[]{Uri.parse(mCameraPhotoPath)};
 						mFileUploadCallbackSecond.onReceiveValue(dataUris);
 						mFileUploadCallbackSecond = null;
 					}
-				} else {
-                    if(mCameraPhotoPath != null) {
-                        Uri[] dataUris = new Uri[]{Uri.parse(mCameraPhotoPath)};
-                        mFileUploadCallbackSecond.onReceiveValue(dataUris);
-                        mFileUploadCallbackSecond = null;
-                    }
-                }
-			}
-			else {
+				}
+			} else {
 				if (mFileUploadCallbackFirst != null) {
 					mFileUploadCallbackFirst.onReceiveValue(null);
 					mFileUploadCallbackFirst = null;
@@ -1075,6 +1093,7 @@ public class AdvancedWebView extends WebView {
 		Intent i = new Intent(Intent.ACTION_GET_CONTENT);
 		i.addCategory(Intent.CATEGORY_OPENABLE);
 		i.setType("*/*");
+		i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
 
 		boolean acceptsImagesOrEverything = false;
@@ -1108,6 +1127,7 @@ public class AdvancedWebView extends WebView {
             Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
             contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
             contentSelectionIntent.setType("image/*");
+            contentSelectionIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
             Intent[] intentArray;
             if (takePictureIntent != null) {
