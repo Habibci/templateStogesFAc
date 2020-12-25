@@ -70,7 +70,7 @@ public class App extends MultiDexApplication {
 
     }
 
-    public synchronized String getPushUrl(){
+    public synchronized String getAndResetPushUrl(){
         String url = push_url;
         push_url = null;
         return url;

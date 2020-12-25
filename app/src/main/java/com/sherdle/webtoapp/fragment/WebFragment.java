@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.onesignal.OneSignal;
 import com.sherdle.webtoapp.App;
 import com.sherdle.webtoapp.Config;
 import com.sherdle.webtoapp.util.GetFileInfo;
@@ -151,12 +152,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
 
         // load url (if connection available
         if (webClient.hasConnectivity(mainUrl, true)) {
-            String pushurl = ((App) getActivity().getApplication()).getPushUrl();
-            if (pushurl != null){
-                browser.loadUrl(pushurl);
-            } else {
-                browser.loadUrl(mainUrl);
-            }
+            browser.loadUrl(mainUrl);
         } else {
             try {
                 ((MainActivity) getActivity()).hideSplash();
@@ -189,6 +185,13 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
     public void onResume() {
         super.onResume();
         browser.onResume();
+
+        if (webClient.hasConnectivity(mainUrl, true)) {
+            String pushurl = ((App) getActivity().getApplication()).getAndResetPushUrl();
+            if (pushurl != null){
+                browser.loadUrl(pushurl);
+            }
+        }
     }
 
     @SuppressLint("NewApi")
@@ -258,7 +261,7 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
                 && getActivity() instanceof MainActivity
                 && Config.INTERSTITIAL_PAGE_LOAD)
             ((MainActivity) getActivity()).showInterstitial();
-
+        
         try {
             ((MainActivity) getActivity()).hideSplash();
         } catch (Exception e){
