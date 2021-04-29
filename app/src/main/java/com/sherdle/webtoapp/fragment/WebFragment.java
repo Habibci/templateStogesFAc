@@ -134,6 +134,9 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
         browser.getSettings().setAppCacheEnabled(true);
         browser.getSettings().setDatabaseEnabled(true);
         browser.getSettings().setDomStorageEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            browser.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        }
         // Below required for geolocation
         browser.setGeolocationEnabled(true);
         // 3RD party plugins (on older devices)
