@@ -2,6 +2,7 @@ package com.sherdle.webtoapp.widget.webview;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JsResult;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -17,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.sherdle.webtoapp.Config;
@@ -124,6 +127,21 @@ public class WebToAppChromeClient extends WebChromeClient {
     }
 
     @Override
+    public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
+        AlertDialog dialog = new AlertDialog.Builder(view.getContext()).
+                setMessage(message).
+                setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //do nothing
+                    }
+                }).create();
+        dialog.show();
+        result.confirm();
+        return true;
+    }
+
+@Override
     public void onPermissionRequest(PermissionRequest request) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             request.grant(request.getResources());
