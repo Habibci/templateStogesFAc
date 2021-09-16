@@ -17,6 +17,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 import android.webkit.WebSettings.PluginState;
@@ -136,6 +138,9 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
         browser.getSettings().setDomStorageEnabled(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             browser.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(browser, true);
         }
         // Below required for geolocation
         browser.setGeolocationEnabled(true);
@@ -271,6 +276,8 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
             e.printStackTrace();
         }
 
+        loadCookies();
+
         if (clearHistory)
         {
             clearHistory = false;
@@ -294,6 +301,20 @@ public class WebFragment extends Fragment implements AdvancedWebView.Listener, S
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         browser.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /*
+     * Method to force sync cookies for older Android Versions:
+     * https://developer.android.com/reference/android/webkit/CookieSyncManager
+     */
+    @SuppressWarnings("deprecation")
+    public static void loadCookies() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            CookieManager.getInstance().flush();
+        } else {
+            CookieSyncManager.getInstance().sync();
+        }
     }
 
     // sharing
